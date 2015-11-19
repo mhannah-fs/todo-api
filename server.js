@@ -13,10 +13,13 @@ app.get('/', function (req, res) {
 	res.send('Todo API Root');
 });
 
+
+
 //  GET /todos
 app.get('/todos', function (req, res) {
 	res.json(todos);
 });
+
 
 //  GET /todos/:id
 app.get('/todos/:id', function (req, res) {
@@ -33,6 +36,8 @@ app.get('/todos/:id', function (req, res) {
 	}
 });
 
+
+
 // POST /todos
 app.post('/todos', function (req, res) {
 	var body = _.pick(req.body, 'description', 'completed');
@@ -45,13 +50,39 @@ app.post('/todos', function (req, res) {
 	
 	// add id field
 	body.id = todoNextId++;
-	
-	
+		
 	// push body into array
 	todos.push(body);
 		
 	res.json(body);
-})
+});
+
+
+
+//  DELETE /todos/:id
+app.delete('/todos/:id', function (req, res) {
+	
+	// create variable to store the parameter request in the URL after todos/
+	var todoId = parseInt(req.params.id, 10);
+	
+	var matchedTodo = _.findWhere(todos, {id: todoId});
+	
+	if (!matchedTodo) {
+		res.status(404).json({"error": "No todo found with that id"});
+	} else {
+		todos = _.without(todos, matchedTodo);
+		res.json(matchedTodo);
+	}
+	
+	//if (matchedTodo) {
+	//	res.json(matchedTodo);
+	//} else {
+	//	res.status(404).send();
+	//}
+});
+
+
+
 
 app.listen(PORT, function () {
 	console.log('Express listening on PORT ' + PORT + '!');
